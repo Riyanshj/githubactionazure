@@ -34,4 +34,4 @@ jobs:
             adminPassword='${{ secrets.ADMIN_PASSWORD }}' \
             vmSize=Standard_DS1_v2 \
             osDiskType=Standard_LRS \
-          --location eastus
+            location="Central India"
