@@ -1,7 +1,4 @@
-name: GitHub for IT Pro CI/CD Pipeline
-
-env:
-  OUTPUT_PATH: ${{ github.workspace }}
+name: Deploy Windows Server 2022 VM
 
 on:
   push:
@@ -9,36 +6,32 @@ on:
       - main  # Replace with your main branch name
 
 jobs:
-  # Deploy VM in Azure
-  DeployVM:
-    runs-on: windows-latest
-
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
     steps:
-    # Checkout code from the repository
     - name: Checkout repository
-      uses: actions/checkout@v1
-
-    # List files in the IaC\AzCLI directory (optional step)
-    - name: Look for ps1 file
-      run: |
-        ls '${{ env.OUTPUT_PATH }}\IaC\AzCLI'
-
-    # Provision virtual machine in Azure
-    - name: Provision virtual machine in Azure
+      uses: actions/checkout@v2
+      
+    - name: Set up Azure CLI
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.0.72
+      
+    - name: Deploy ARM template
       env:
-        RESOURCE_GROUP: MyResourceGroup  # Replace with your resource group name
-        RESOURCE_GROUP_REGION: centralindia  # Replace with your resource group region
-        SERVER_NAME: githubactions  # Replace with your desired server name
-        ADMIN_LOGIN: riyanshj83@gmail.com  # Replace with your admin login
-
+        AZURE_SUBSCRIPTION_ID: 9453b8b3-06c9-4730-bec1-6574b59c1119
+        AZURE_RESOURCE_GROUP: rg-test
+        AZURE_LOCATION: Central India
       run: |
-        powershell -command "& '${{ env.OUTPUT_PATH }}\IaC\AzCLI\vmcreation.ps1'" `
-        -servicePrincipal ${{ secrets.SERVICE_PRINCIPAL_APPID }} `
-        -servicePrincipalSecret ${{ secrets.SERVICE_PRINCIPAL_SECRET }} `
-        -servicePrincipalTenantId ${{ secrets.SERVICE_PRINCIPAL_TENANTID }} `
-        -azureSubscriptionName ${{ secrets.AZURE_SUBSCRIPTION_ID }} `
-        -resourceGroupName $env:RESOURCE_GROUP `
-        -resourceGroupNameRegion $env:RESOURCE_GROUP_REGION `
-        -serverName $env:SERVER_NAME `
-        -adminLogin $env:ADMIN_LOGIN `
-        -adminPassword ${{ secrets.ADMIN_PASSWORD }}
+        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+        az deployment group create --name "vm-deployment" \
+                                   --resource-group $AZURE_RESOURCE_GROUP \
+                                   --template-file windows-server-2022-vm.json \
+                                   --parameters \
+                                      vmName=<vm-name> \
+                                      adminUsername=<admin-username> \
+                                      adminPassword='${{ secrets.ADMIN_PASSWORD }}' \
+                                      vmSize=<vm-size> \
+                                      osDiskType=<os-disk-type> \
+                                   --location $AZURE_LOCATION
