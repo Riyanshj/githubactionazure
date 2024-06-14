@@ -75,7 +75,7 @@
     },
     "location": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
+      "defaultValue": "Central India",
       "metadata": {
         "description": "Location of the resource"
       }
