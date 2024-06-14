@@ -3,7 +3,7 @@ name: Deploy Windows Server 2022 VM
 on:
   push:
     branches:
-      - main  # Replace with your main branch name
+      - main
 
 jobs:
   build-and-deploy:
@@ -16,7 +16,17 @@ jobs:
     - name: Log in to Azure
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        environment: AzureCloud
+        active-directory-endpoint-url: ${{ secrets.AZURE_ACTIVE_DIRECTORY_ENDPOINT_URL }}
+        resource-manager-endpoint-url: ${{ secrets.AZURE_RESOURCE_MANAGER_ENDPOINT_URL }}
+        active-directory-graph-resource-id: ${{ secrets.AZURE_ACTIVE_DIRECTORY_GRAPH_RESOURCE_ID }}
+        sql-management-endpoint-url: ${{ secrets.AZURE_SQL_MANAGEMENT_ENDPOINT_URL }}
+        gallery-endpoint-url: ${{ secrets.AZURE_GALLERY_ENDPOINT_URL }}
+        management-endpoint-url: ${{ secrets.AZURE_MANAGEMENT_ENDPOINT_URL }}
 
     - name: Install Azure CLI
       run: |
@@ -26,12 +36,12 @@ jobs:
       run: |
         az deployment group create \
           --name "vm-deployment" \
-          --resource-group <your-resource-group-name> \
+          --resource-group myResourceGroup \
           --template-file windows-server-2022-vm.json \
           --parameters \
-            vmName=<vm-name> \
-            adminUsername=<admin-username> \
+            vmName=myVM \
+            adminUsername=adminUser \
             adminPassword='${{ secrets.ADMIN_PASSWORD }}' \
-            vmSize=<vm-size> \
-            osDiskType=<os-disk-type> \
-          --location <azure-region>
+            vmSize=Standard_DS1_v2 \
+            osDiskType=Standard_LRS \
+          --location centralindia
