@@ -16,17 +16,7 @@ jobs:
     - name: Log in to Azure
       uses: azure/login@v1
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        environment: AzureCloud
-        active-directory-endpoint-url: ${{ secrets.AZURE_ACTIVE_DIRECTORY_ENDPOINT_URL }}
-        resource-manager-endpoint-url: ${{ secrets.AZURE_RESOURCE_MANAGER_ENDPOINT_URL }}
-        active-directory-graph-resource-id: ${{ secrets.AZURE_ACTIVE_DIRECTORY_GRAPH_RESOURCE_ID }}
-        sql-management-endpoint-url: ${{ secrets.AZURE_SQL_MANAGEMENT_ENDPOINT_URL }}
-        gallery-endpoint-url: ${{ secrets.AZURE_GALLERY_ENDPOINT_URL }}
-        management-endpoint-url: ${{ secrets.AZURE_MANAGEMENT_ENDPOINT_URL }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Install Azure CLI
       run: |
@@ -44,4 +34,4 @@ jobs:
             adminPassword='${{ secrets.ADMIN_PASSWORD }}' \
             vmSize=Standard_DS1_v2 \
             osDiskType=Standard_LRS \
-          --location centralindia
+          --location eastus
