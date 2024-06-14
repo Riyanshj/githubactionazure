@@ -36,3 +36,4 @@ jobs:
             osDiskType=Standard_LRS \
             location="Central India" \
             nicName=myNIC
+            
