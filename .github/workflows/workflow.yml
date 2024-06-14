@@ -8,30 +8,28 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      
-    - name: Set up Azure CLI
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy ARM template
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.0.72
-      
-    - name: Deploy ARM template
-      env:
-        AZURE_SUBSCRIPTION_ID: 9453b8b3-06c9-4730-bec1-6574b59c1119
-        AZURE_RESOURCE_GROUP: rg-test
-        AZURE_LOCATION: Central India
-      run: |
-        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
-        az deployment group create --name "vm-deployment" \
-                                   --resource-group $AZURE_RESOURCE_GROUP \
-                                   --template-file windows-server-2022-vm.json \
-                                   --parameters \
-                                      vmName=<vm-name> \
-                                      adminUsername=<admin-username> \
-                                      adminPassword='${{ secrets.ADMIN_PASSWORD }}' \
-                                      vmSize=<vm-size> \
-                                      osDiskType=<os-disk-type> \
-                                   --location $AZURE_LOCATION
+        inlineScript: |
+          az deployment group create \
+            --name "vm-deployment" \
+            --resource-group <your-resource-group-name> \
+            --template-file windows-server-2022-vm.json \
+            --parameters \
+              vmName=<vm-name> \
+              adminUsername=<admin-username> \
+              adminPassword='${{ secrets.ADMIN_PASSWORD }}' \
+              vmSize=<vm-size> \
+              osDiskType=<os-disk-type> \
+            --location <azure-region>
