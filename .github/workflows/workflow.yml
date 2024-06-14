@@ -25,7 +25,7 @@ jobs:
         RESOURCE_GROUP: rg-test
         RESOURCE_GROUP_REGION: centralindia
         SERVER_NAME: githubactions
-        ADMIN_LOGIN: sarah
+        ADMIN_LOGIN: riyanshj83@gmail.com
       run: >
         powershell -command "& '${{ env.OUTPUT_PATH }}\IaC\AzCLI\vmcreation.ps1'" 
         -servicePrincipal ${{ secrets.SERVICE_PRINCIPAL_APPID }}
