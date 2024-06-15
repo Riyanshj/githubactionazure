@@ -26,7 +26,7 @@ jobs:
       run: |
         az deployment group create \
           --name "vm-deployment" \
-          --resource-group myResourceGroup \
+          --resource-group test-rg \
           --template-file windows-server-2022-vm.json \
           --parameters \
             vmName=myVM \
