@@ -1,0 +1,35 @@
+name: Deploy Windows Server 2022 VM
+
+on: [push]
+
+jobs:
+  deploy-vm:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Create Resource Group
+      run: |
+        az group create --name test-rg --location centralindia
+
+    - name: Create Windows Server 2022 VM
+      run: |
+        az vm create \
+          --resource-group test-rg \
+          --name MyWindowsVM \
+          --image MicrosoftWindowsServer:WindowsServer:2022-Datacenter:latest \
+          --size Standard_B2s \
+          --admin-username azureuser \
+          --admin-password ${{ secrets.VM_ADMIN_PASSWORD }} \
+          --location centralindia
+
+    - name: Output VM Information
+      run: |
+        az vm show --resource-group test-rg --name MyWindowsVM --show-details
